@@ -1,6 +1,9 @@
 import {
   CartesianGrid,
   Legend,
+import { format } from 'date-fns'
+import {
+  CartesianGrid,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -32,6 +35,8 @@ function formatUtc(timestamp: string) {
 
 export default function App() {
   const generatedAt = dashboardData.meta.generatedAt
+export default function App() {
+  const generatedDate = new Date(dashboardData.meta.generatedAt)
 
   return (
     <main className="container">
@@ -47,6 +52,12 @@ export default function App() {
         <div className="last-updated">
           <span>Last Updated</span>
           <strong>{formatUtc(generatedAt)}</strong>
+            Automatically rebuilt every 15 minutes from upstream API data.
+          </p>
+        </div>
+        <div className="last-updated">
+          <span>Last Updated</span>
+          <strong>{format(generatedDate, "MMM d, yyyy 'at' HH:mm 'UTC'")}</strong>
           <span className={`status status-${dashboardData.meta.status}`}>
             Pipeline status: {dashboardData.meta.status}
           </span>
@@ -114,6 +125,24 @@ export default function App() {
                     strokeWidth={2}
                     dot={false}
                   />
+        <SectionCard title="Activity Trend" subtitle="Recent snapshots from the data pipeline">
+          {dashboardData.trend.length > 0 ? (
+            <div className="chart-wrapper">
+              <ResponsiveContainer width="100%" height={280}>
+                <LineChart data={dashboardData.trend} margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="timestamp"
+                    tickFormatter={(value: string) => format(new Date(value), 'HH:mm')}
+                  />
+                  <YAxis yAxisId="left" />
+                  <YAxis yAxisId="right" orientation="right" />
+                  <Tooltip
+                    formatter={(value: number, key: string) => [numberFormatter.format(value), key]}
+                    labelFormatter={(label: string) => format(new Date(label), "MMM d, HH:mm 'UTC'")}
+                  />
+                  <Line yAxisId="left" type="monotone" dataKey="activePlayers" stroke="#4f46e5" />
+                  <Line yAxisId="right" type="monotone" dataKey="matches" stroke="#0ea5e9" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -151,11 +180,37 @@ export default function App() {
           ) : (
             <p className="muted">No player list is available for this refresh.</p>
           )}
+        <SectionCard title="Top Players" subtitle="Most active competitors from latest refresh">
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Platform</th>
+                  <th>Matches</th>
+                  <th>K/D</th>
+                  <th>Win Rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dashboardData.topPlayers.map((player) => (
+                  <tr key={player.playerId}>
+                    <td>{player.name}</td>
+                    <td>{player.platform}</td>
+                    <td>{numberFormatter.format(player.matches)}</td>
+                    <td>{player.kdr.toFixed(2)}</td>
+                    <td>{asPercent(player.winRate)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </SectionCard>
       </div>
 
       {dashboardData.alerts.length > 0 ? (
         <SectionCard title="Pipeline Alerts" subtitle="These messages are generated during API normalization.">
+        <SectionCard title="Pipeline Alerts">
           <ul className="alerts">
             {dashboardData.alerts.map((alert) => (
               <li key={alert.message} className={`alert alert-${alert.level}`}>

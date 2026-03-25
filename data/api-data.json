@@ -3,6 +3,9 @@
     "source": "steam-web-api",
     "generatedAt": "2026-03-25T19:05:32.849Z",
     "status": "error"
+    "source": "seed",
+    "generatedAt": "2026-01-01T00:00:00.000Z",
+    "status": "degraded"
   },
   "summary": {
     "activePlayers": 0,
@@ -147,6 +150,15 @@
     {
       "level": "warn",
       "message": "Failed to fetch achievement metrics: fetch failed"
+    "avgKdr": 0,
+    "avgWinRate": 0
+  },
+  "trend": [],
+  "topPlayers": [],
+  "alerts": [
+    {
+      "level": "warn",
+      "message": "No live data has been fetched yet. Run npm run data:fetch or the GitHub Action."
     }
   ]
 }

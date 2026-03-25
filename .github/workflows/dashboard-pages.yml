@@ -14,6 +14,7 @@ permissions:
 
 concurrency:
   group: dashboard-pages-${{ github.ref }}
+  group: dashboard-pages
   cancel-in-progress: true
 
 jobs:
@@ -55,6 +56,12 @@ jobs:
 
       - name: Ensure no-jekyll file
         run: touch dist/.nojekyll
+
+      - name: Build static site
+        run: npm run build:app
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

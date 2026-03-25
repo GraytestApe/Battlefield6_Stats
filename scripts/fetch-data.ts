@@ -52,6 +52,11 @@ async function fetchJson<T>(url: string, schema: z.ZodType<T>) {
 
   if (!response.ok) {
     throw new Error(`Request failed (${response.status}) for ${url}`)
+    headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : undefined
+  })
+
+  if (!response.ok) {
+    throw new Error(`Request failed with ${response.status} for ${url}`)
   }
 
   const data: unknown = await response.json()
@@ -63,11 +68,15 @@ function deriveFallbackPlayers(activePlayers: number) {
     { playerId: '1', name: 'Gman 810', platform: 'Xbox', kdr: 1.92, winRate: 0.58, matches: 47 },
     { playerId: '2', name: 'HxC Noob Killer', platform: 'Xbox', kdr: 1.74, winRate: 0.55, matches: 42 },
     { playerId: '3', name: 'RogueFalcon', platform: 'PC', kdr: 1.68, winRate: 0.53, matches: 38 },
+    { playerId: '1', name: 'RogueFalcon', platform: 'PC', kdr: 1.92, winRate: 0.58, matches: 47 },
+    { playerId: '2', name: 'MedicMaven', platform: 'PS5', kdr: 1.74, winRate: 0.55, matches: 42 },
+    { playerId: '3', name: 'ArmorAce', platform: 'Xbox', kdr: 1.68, winRate: 0.53, matches: 38 },
     { playerId: '4', name: 'SkylineSniper', platform: 'PC', kdr: 2.11, winRate: 0.61, matches: 36 },
     { playerId: '5', name: 'FrontlineFox', platform: 'PC', kdr: 1.49, winRate: 0.51, matches: 31 }
   ].map((row, index) => ({
     ...row,
     matches: row.matches + Math.floor(activePlayers / 10_000) + index
+    matches: row.matches + Math.floor(activePlayers / 10000) + index
   }))
 }
 
@@ -90,6 +99,13 @@ function buildTrend(activePlayers: number) {
 
 function asMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error)
+  points.push({
+    timestamp,
+    activePlayers,
+    matches: Math.round(activePlayers * 1.8)
+  })
+
+  return points
 }
 
 async function main() {
@@ -116,6 +132,7 @@ async function main() {
       level: 'error',
       message: `Failed to fetch active player count: ${asMessage(playersResult.reason)}`
     })
+    alerts.push({ level: 'error', message: `Failed to fetch active player count: ${playersResult.reason}` })
   }
 
   let avgWinRate = 0.5
@@ -136,6 +153,7 @@ async function main() {
       level: 'warn',
       message: `Failed to fetch achievement metrics: ${asMessage(achievementResult.reason)}`
     })
+    alerts.push({ level: 'warn', message: `Failed to fetch achievement metrics: ${achievementResult.reason}` })
   }
 
   const topPlayers =
@@ -150,6 +168,7 @@ async function main() {
     alerts.push({
       level: 'warn',
       message: `Top players endpoint unavailable; using fallback sample data: ${asMessage(topPlayersResult.reason)}`
+      message: `Top players endpoint unavailable; using fallback sample data: ${topPlayersResult.reason}`
     })
   }
 
