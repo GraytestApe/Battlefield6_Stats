@@ -154,11 +154,52 @@
     "avgWinRate": 0
   },
   "trend": [],
-  "topPlayers": [],
+  "topPlayers": [
+    {
+      "playerId": "1",
+      "name": "RogueFalcon",
+      "platform": "PC",
+      "kdr": 1.92,
+      "winRate": 0.58,
+      "matches": 47
+    },
+    {
+      "playerId": "2",
+      "name": "MedicMaven",
+      "platform": "PS5",
+      "kdr": 1.74,
+      "winRate": 0.55,
+      "matches": 42
+    },
+    {
+      "playerId": "3",
+      "name": "ArmorAce",
+      "platform": "Xbox",
+      "kdr": 1.68,
+      "winRate": 0.53,
+      "matches": 38
+    },
+    {
+      "playerId": "4",
+      "name": "SkylineSniper",
+      "platform": "PC",
+      "kdr": 2.11,
+      "winRate": 0.61,
+      "matches": 36
+    },
+    {
+      "playerId": "5",
+      "name": "FrontlineFox",
+      "platform": "PC",
+      "kdr": 1.49,
+      "winRate": 0.51,
+      "matches": 31
+    }
+  ],
   "alerts": [
     {
       "level": "warn",
-      "message": "No live data has been fetched yet. Run npm run data:fetch or the GitHub Action."
+      "message": "Showing fallback seed data for first deploy. Live fetch has not run yet—run npm run data:fetch or wait for the GitHub Action schedule."
     }
   ]
 }
