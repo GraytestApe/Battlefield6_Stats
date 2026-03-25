@@ -136,6 +136,10 @@ Pipeline steps:
 4. Push to `main` or run the workflow manually.
 5. Visit the Pages URL from workflow output.
 
+## Seed fallback note
+
+The committed `data/api-data.json` is intentionally a fallback seed payload so first-time deployments still render meaningful content before the first live fetch runs. CI/local fetch jobs (`npm run data:fetch`) will overwrite it with current API output.
+
 ## Notes on API customization
 
 If you have a richer Battlefield API:
