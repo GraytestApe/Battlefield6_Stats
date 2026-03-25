@@ -1,8 +1,8 @@
 # AGENTS Instructions
 
-- Stack: Vite + React + TypeScript static dashboard.
-- Always keep `data/api-data.json` as the build-time data source used by the UI.
-- Update `scripts/fetch-data.ts` if API fields change; keep resilient `Promise.allSettled` behavior.
-- Keep GitHub Pages deployment in `.github/workflows/dashboard-pages.yml`.
-- Run `npm run data:fetch` then `npm run build:app` before finishing major changes.
-- Prefer reusable components in `src/components` and avoid unnecessary dependencies.
+- Stack: Vite + React + TypeScript static dashboard for GitHub Pages.
+- Keep `data/api-data.json` as the UI build-time data input.
+- Update `scripts/fetch-data.ts` when upstream API fields change; preserve schema validation + fallback behavior.
+- Keep `.github/workflows/dashboard-pages.yml` aligned with Pages deployment requirements.
+- Before finishing substantial changes, run: `npm run data:fetch`, `npm run check`, and `npm run build:app`.
+- Keep UI components reusable in `src/components` and avoid adding dependencies unless they materially improve maintainability.

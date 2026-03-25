@@ -1,8 +1,11 @@
 {
   "meta": {
     "source": "steam-web-api",
-    "generatedAt": "2026-03-25T19:56:50.320Z",
+    "generatedAt": "2026-03-25T19:05:32.849Z",
     "status": "error"
+    "source": "seed",
+    "generatedAt": "2026-01-01T00:00:00.000Z",
+    "status": "degraded"
   },
   "summary": {
     "activePlayers": 0,
@@ -12,87 +15,87 @@
   },
   "trend": [
     {
-      "timestamp": "2026-03-25T16:11:50.575Z",
+      "timestamp": "2026-03-25T15:20:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T16:26:50.575Z",
+      "timestamp": "2026-03-25T15:35:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T16:41:50.575Z",
+      "timestamp": "2026-03-25T15:50:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T16:56:50.575Z",
+      "timestamp": "2026-03-25T16:05:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T17:11:50.575Z",
+      "timestamp": "2026-03-25T16:20:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T17:26:50.575Z",
+      "timestamp": "2026-03-25T16:35:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T17:41:50.575Z",
+      "timestamp": "2026-03-25T16:50:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T17:56:50.575Z",
+      "timestamp": "2026-03-25T17:05:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T18:11:50.575Z",
+      "timestamp": "2026-03-25T17:20:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T18:26:50.575Z",
+      "timestamp": "2026-03-25T17:35:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T18:41:50.576Z",
+      "timestamp": "2026-03-25T17:50:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T18:56:50.576Z",
+      "timestamp": "2026-03-25T18:05:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T19:11:50.576Z",
+      "timestamp": "2026-03-25T18:20:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T19:26:50.576Z",
+      "timestamp": "2026-03-25T18:35:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T19:41:50.576Z",
+      "timestamp": "2026-03-25T18:50:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T19:56:50.576Z",
+      "timestamp": "2026-03-25T19:05:33.144Z",
       "activePlayers": 0,
       "matches": 0
     },
     {
-      "timestamp": "2026-03-25T19:56:50.320Z",
+      "timestamp": "2026-03-25T19:05:32.849Z",
       "activePlayers": 0,
       "matches": 0
     }
@@ -100,24 +103,24 @@
   "topPlayers": [
     {
       "playerId": "1",
-      "name": "RogueFalcon",
-      "platform": "PC",
+      "name": "Gman 810",
+      "platform": "Xbox",
       "kdr": 1.92,
       "winRate": 0.58,
       "matches": 47
     },
     {
       "playerId": "2",
-      "name": "MedicMaven",
-      "platform": "PS5",
+      "name": "HxC Noob Killer",
+      "platform": "Xbox",
       "kdr": 1.74,
       "winRate": 0.55,
       "matches": 43
     },
     {
       "playerId": "3",
-      "name": "ArmorAce",
-      "platform": "Xbox",
+      "name": "RogueFalcon",
+      "platform": "PC",
       "kdr": 1.68,
       "winRate": 0.53,
       "matches": 40
@@ -142,11 +145,65 @@
   "alerts": [
     {
       "level": "error",
+      "message": "Failed to fetch active player count: fetch failed"
+    },
+    {
+      "level": "warn",
+      "message": "Failed to fetch achievement metrics: fetch failed"
+    "avgKdr": 0,
+    "avgWinRate": 0
+  },
+  "trend": [],
+  "topPlayers": [
+    {
+      "playerId": "1",
+      "name": "RogueFalcon",
+      "platform": "PC",
+      "kdr": 1.92,
+      "winRate": 0.58,
+      "matches": 47
+    },
+    {
+      "playerId": "2",
+      "name": "MedicMaven",
+      "platform": "PS5",
+      "kdr": 1.74,
+      "winRate": 0.55,
+      "matches": 42
+    },
+    {
+      "playerId": "3",
+      "name": "ArmorAce",
+      "platform": "Xbox",
+      "kdr": 1.68,
+      "winRate": 0.53,
+      "matches": 38
+    },
+    {
+      "playerId": "4",
+      "name": "SkylineSniper",
+      "platform": "PC",
+      "kdr": 2.11,
+      "winRate": 0.61,
+      "matches": 36
+    },
+    {
+      "playerId": "5",
+      "name": "FrontlineFox",
+      "platform": "PC",
+      "kdr": 1.49,
+      "winRate": 0.51,
+      "matches": 31
+    }
+  ],
+  "alerts": [
+    {
+      "level": "error",
       "message": "Failed to fetch active player count: TypeError: fetch failed"
     },
     {
       "level": "warn",
-      "message": "Failed to fetch achievement metrics: TypeError: fetch failed"
+      "message": "Showing fallback seed data for first deploy. Live fetch has not run yet—run npm run data:fetch or wait for the GitHub Action schedule."
     }
   ]
 }
