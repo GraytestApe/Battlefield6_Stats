@@ -14,7 +14,6 @@ permissions:
 
 concurrency:
   group: dashboard-pages-${{ github.ref }}
-  group: dashboard-pages
   cancel-in-progress: true
 
 jobs:
@@ -41,27 +40,23 @@ jobs:
           BATTLEFIELD_API_KEY: ${{ secrets.BATTLEFIELD_API_KEY }}
           BATTLEFIELD_APP_ID: ${{ vars.BATTLEFIELD_APP_ID }}
           BATTLEFIELD_PLAYERS_ENDPOINT: ${{ vars.BATTLEFIELD_PLAYERS_ENDPOINT }}
+          BATTLEFIELD_PLAYER_TAGS: ${{ vars.BATTLEFIELD_PLAYER_TAGS }}
+          BATTLEFIELD_PLAYER_PLATFORM: ${{ vars.BATTLEFIELD_PLAYER_PLATFORM }}
+          BATTLEFIELD_PLAYER_STATS_ENDPOINT_TEMPLATE: ${{ vars.BATTLEFIELD_PLAYER_STATS_ENDPOINT_TEMPLATE }}
         run: npm run data:fetch
 
       - name: Warn if fetch step degraded
         if: steps.fetch_data.outcome != 'success'
-        run: |
-          echo "::warning::Data refresh failed; building with repository fallback data file."
-
-      - name: Build static site
-        run: npm run build:app
-
-      - name: Prepare Pages metadata
-        uses: actions/configure-pages@v5
-
-      - name: Ensure no-jekyll file
-        run: touch dist/.nojekyll
+        run: echo "::warning::Data refresh failed; building with repository fallback data file."
 
       - name: Build static site
         run: npm run build:app
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
+      - name: Ensure no-jekyll file
+        run: touch dist/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
