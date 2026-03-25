@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "source": "seed",
+    "generatedAt": "2026-01-01T00:00:00.000Z",
+    "status": "degraded"
+  },
+  "summary": {
+    "activePlayers": 0,
+    "matches24h": 0,
+    "avgKdr": 0,
+    "avgWinRate": 0
+  },
+  "trend": [],
+  "topPlayers": [],
+  "alerts": [
+    {
+      "level": "warn",
+      "message": "No live data has been fetched yet. Run npm run data:fetch or the GitHub Action."
+    }
+  ]
+}
