@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis
 } from 'recharts'
-import { dashboardData } from './data'
+import { dashboardData, dashboardDataParseError } from './data'
 import { SectionCard } from './components/SectionCard'
 import { SummaryCard } from './components/SummaryCard'
 
@@ -63,6 +63,12 @@ export default function App() {
           </span>
         </div>
       </header>
+
+      {dashboardDataParseError ? (
+        <section className="card" role="alert" aria-live="assertive">
+          <strong>Data validation warning:</strong> {dashboardDataParseError}
+        </section>
+      ) : null}
 
       <section className="summary-grid">
         <SummaryCard
@@ -138,8 +144,8 @@ export default function App() {
                   <YAxis yAxisId="left" />
                   <YAxis yAxisId="right" orientation="right" />
                   <Tooltip
-                    formatter={(value: number, key: string) => [numberFormatter.format(value), key]}
-                    labelFormatter={(label: string) => format(new Date(label), "MMM d, HH:mm 'UTC'")}
+                    formatter={(value, key) => [numberFormatter.format(Number(value ?? 0)), String(key)]}
+                    labelFormatter={(label) => format(new Date(String(label)), "MMM d, HH:mm 'UTC'")}
                   />
                   <Line yAxisId="left" type="monotone" dataKey="activePlayers" stroke="#4f46e5" />
                   <Line yAxisId="right" type="monotone" dataKey="matches" stroke="#0ea5e9" />

@@ -198,6 +198,10 @@
   ],
   "alerts": [
     {
+      "level": "error",
+      "message": "Failed to fetch active player count: TypeError: fetch failed"
+    },
+    {
       "level": "warn",
       "message": "Showing fallback seed data for first deploy. Live fetch has not run yet—run npm run data:fetch or wait for the GitHub Action schedule."
     }
