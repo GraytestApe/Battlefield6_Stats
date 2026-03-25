@@ -6,11 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run data:fetch && tsc -b && vite build",
-    "build:app": "tsc -b && vite build",
+    "build:app": "npm run data:validate && tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
     "data:fetch": "tsx scripts/fetch-data.ts",
-    "check": "npm run lint && npm run build:app"
+    "check": "npm run lint && npm run build:app",
+    "data:validate": "tsx scripts/validate-data.ts"
   },
   "dependencies": {
     "date-fns": "^4.1.0",
