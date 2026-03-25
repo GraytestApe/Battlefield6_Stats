@@ -11,6 +11,7 @@ const appId = process.env.BATTLEFIELD_APP_ID ?? '1517290'
 const apiKey = process.env.BATTLEFIELD_API_KEY
 const customPlayersEndpoint = process.env.BATTLEFIELD_PLAYERS_ENDPOINT
 const timestamp = new Date().toISOString()
+const requestTimeoutMs = 12_000
 
 const currentPlayersSchema = z.object({
   response: z.object({
@@ -42,6 +43,15 @@ const topPlayerSchema = z.array(
 
 async function fetchJson<T>(url: string, schema: z.ZodType<T>) {
   const response = await fetch(url, {
+    headers: {
+      ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+      'User-Agent': 'battlefield6-stats-dashboard/1.1'
+    },
+    signal: AbortSignal.timeout(requestTimeoutMs)
+  })
+
+  if (!response.ok) {
+    throw new Error(`Request failed (${response.status}) for ${url}`)
     headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : undefined
   })
 
@@ -55,6 +65,9 @@ async function fetchJson<T>(url: string, schema: z.ZodType<T>) {
 
 function deriveFallbackPlayers(activePlayers: number) {
   return [
+    { playerId: '1', name: 'Gman 810', platform: 'Xbox', kdr: 1.92, winRate: 0.58, matches: 47 },
+    { playerId: '2', name: 'HxC Noob Killer', platform: 'Xbox', kdr: 1.74, winRate: 0.55, matches: 42 },
+    { playerId: '3', name: 'RogueFalcon', platform: 'PC', kdr: 1.68, winRate: 0.53, matches: 38 },
     { playerId: '1', name: 'RogueFalcon', platform: 'PC', kdr: 1.92, winRate: 0.58, matches: 47 },
     { playerId: '2', name: 'MedicMaven', platform: 'PS5', kdr: 1.74, winRate: 0.55, matches: 42 },
     { playerId: '3', name: 'ArmorAce', platform: 'Xbox', kdr: 1.68, winRate: 0.53, matches: 38 },
@@ -62,6 +75,7 @@ function deriveFallbackPlayers(activePlayers: number) {
     { playerId: '5', name: 'FrontlineFox', platform: 'PC', kdr: 1.49, winRate: 0.51, matches: 31 }
   ].map((row, index) => ({
     ...row,
+    matches: row.matches + Math.floor(activePlayers / 10_000) + index
     matches: row.matches + Math.floor(activePlayers / 10000) + index
   }))
 }
@@ -80,6 +94,11 @@ function buildTrend(activePlayers: number) {
     }
   })
 
+  return [...points, { timestamp, activePlayers, matches: Math.round(activePlayers * 1.8) }]
+}
+
+function asMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error)
   points.push({
     timestamp,
     activePlayers,
@@ -109,6 +128,10 @@ async function main() {
     playersResult.status === 'fulfilled' ? playersResult.value.response.player_count : 0
 
   if (playersResult.status === 'rejected') {
+    alerts.push({
+      level: 'error',
+      message: `Failed to fetch active player count: ${asMessage(playersResult.reason)}`
+    })
     alerts.push({ level: 'error', message: `Failed to fetch active player count: ${playersResult.reason}` })
   }
 
@@ -126,6 +149,10 @@ async function main() {
       avgKdr = Math.min(3.2, Math.max(0.6, 0.8 + mean / 100))
     }
   } else {
+    alerts.push({
+      level: 'warn',
+      message: `Failed to fetch achievement metrics: ${asMessage(achievementResult.reason)}`
+    })
     alerts.push({ level: 'warn', message: `Failed to fetch achievement metrics: ${achievementResult.reason}` })
   }
 
@@ -140,6 +167,7 @@ async function main() {
   if (topPlayersResult.status === 'rejected') {
     alerts.push({
       level: 'warn',
+      message: `Top players endpoint unavailable; using fallback sample data: ${asMessage(topPlayersResult.reason)}`
       message: `Top players endpoint unavailable; using fallback sample data: ${topPlayersResult.reason}`
     })
   }
@@ -169,6 +197,7 @@ async function main() {
 
   await writeFile(outputFile, JSON.stringify(output, null, 2) + '\n', 'utf8')
   console.log(`Wrote dashboard data to ${outputFile}`)
+  console.log(`Status: ${output.meta.status}; alerts: ${alerts.length}`)
 }
 
 main().catch((error) => {
