@@ -1,0 +1,40 @@
+{
+  "name": "battlefield6-stats-dashboard",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "data:fetch": "tsx scripts/fetch-data.ts",
+    "build": "npm run data:fetch && npm run build:app",
+    "build:app": "tsc -b && vite build",
+    "typecheck": "tsc -b",
+    "lint": "eslint .",
+    "check": "npm run lint && npm run typecheck",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "recharts": "^3.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@types/node": "^24.5.2",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.4",
+    "eslint": "^9.36.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.21",
+    "globals": "^16.4.0",
+    "tsx": "^4.20.5",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.44.1",
+    "vite": "^7.1.7",
+    "zod": "^4.1.8"
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "meta": {
+    "source": "steam-web-api",
+    "generatedAt": "2026-03-25T19:05:32.849Z",
+    "status": "error"
+  },
+  "summary": {
+    "activePlayers": 0,
+    "matches24h": 0,
+    "avgKdr": 1.25,
+    "avgWinRate": 0.5
+  },
+  "trend": [
+    {
+      "timestamp": "2026-03-25T15:20:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T15:35:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T15:50:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T16:05:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T16:20:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T16:35:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T16:50:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T17:05:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T17:20:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T17:35:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T17:50:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T18:05:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T18:20:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T18:35:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T18:50:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T19:05:33.144Z",
+      "activePlayers": 0,
+      "matches": 0
+    },
+    {
+      "timestamp": "2026-03-25T19:05:32.849Z",
+      "activePlayers": 0,
+      "matches": 0
+    }
+  ],
+  "topPlayers": [
+    {
+      "playerId": "1",
+      "name": "Gman 810",
+      "platform": "Xbox",
+      "kdr": 1.92,
+      "winRate": 0.58,
+      "matches": 47
+    },
+    {
+      "playerId": "2",
+      "name": "HxC Noob Killer",
+      "platform": "Xbox",
+      "kdr": 1.74,
+      "winRate": 0.55,
+      "matches": 43
+    },
+    {
+      "playerId": "3",
+      "name": "RogueFalcon",
+      "platform": "PC",
+      "kdr": 1.68,
+      "winRate": 0.53,
+      "matches": 40
+    },
+    {
+      "playerId": "4",
+      "name": "SkylineSniper",
+      "platform": "PC",
+      "kdr": 2.11,
+      "winRate": 0.61,
+      "matches": 39
+    },
+    {
+      "playerId": "5",
+      "name": "FrontlineFox",
+      "platform": "PC",
+      "kdr": 1.49,
+      "winRate": 0.51,
+      "matches": 35
+    }
+  ],
+  "alerts": [
+    {
+      "level": "error",
+      "message": "Failed to fetch active player count: fetch failed"
+    },
+    {
+      "level": "warn",
+      "message": "Failed to fetch achievement metrics: fetch failed"
+    }
+  ]
+}
