@@ -10,6 +10,12 @@ const outputFile = resolve(dataDir, 'api-data.json')
 const appId = process.env.BATTLEFIELD_APP_ID ?? '1517290'
 const apiKey = process.env.BATTLEFIELD_API_KEY
 const customPlayersEndpoint = process.env.BATTLEFIELD_PLAYERS_ENDPOINT
+const playerTags = (process.env.BATTLEFIELD_PLAYER_TAGS ?? 'Gman 810,HxC Noob Killer')
+  .split(',')
+  .map((item) => item.trim())
+  .filter(Boolean)
+const playerPlatform = process.env.BATTLEFIELD_PLAYER_PLATFORM ?? 'xbox'
+const playerTemplateEndpoint = process.env.BATTLEFIELD_PLAYER_STATS_ENDPOINT_TEMPLATE
 const timestamp = new Date().toISOString()
 const requestTimeoutMs = 12_000
 
@@ -41,42 +47,32 @@ const topPlayerSchema = z.array(
   })
 )
 
+type PlayerRow = z.infer<typeof topPlayerSchema>[number]
+
 async function fetchJson<T>(url: string, schema: z.ZodType<T>) {
   const response = await fetch(url, {
     headers: {
-      ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
-      'User-Agent': 'battlefield6-stats-dashboard/1.1'
+      ...(apiKey ? { Authorization: `Bearer ${apiKey}`, 'TRN-Api-Key': apiKey } : {}),
+      'User-Agent': 'battlefield6-stats-dashboard/1.3'
     },
     signal: AbortSignal.timeout(requestTimeoutMs)
   })
 
   if (!response.ok) {
     throw new Error(`Request failed (${response.status}) for ${url}`)
-    headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : undefined
-  })
-
-  if (!response.ok) {
-    throw new Error(`Request failed with ${response.status} for ${url}`)
   }
 
   const data: unknown = await response.json()
   return schema.parse(data)
 }
 
-function deriveFallbackPlayers(activePlayers: number) {
+function deriveFallbackPlayers(activePlayers: number): PlayerRow[] {
   return [
     { playerId: '1', name: 'Gman 810', platform: 'Xbox', kdr: 1.92, winRate: 0.58, matches: 47 },
-    { playerId: '2', name: 'HxC Noob Killer', platform: 'Xbox', kdr: 1.74, winRate: 0.55, matches: 42 },
-    { playerId: '3', name: 'RogueFalcon', platform: 'PC', kdr: 1.68, winRate: 0.53, matches: 38 },
-    { playerId: '1', name: 'RogueFalcon', platform: 'PC', kdr: 1.92, winRate: 0.58, matches: 47 },
-    { playerId: '2', name: 'MedicMaven', platform: 'PS5', kdr: 1.74, winRate: 0.55, matches: 42 },
-    { playerId: '3', name: 'ArmorAce', platform: 'Xbox', kdr: 1.68, winRate: 0.53, matches: 38 },
-    { playerId: '4', name: 'SkylineSniper', platform: 'PC', kdr: 2.11, winRate: 0.61, matches: 36 },
-    { playerId: '5', name: 'FrontlineFox', platform: 'PC', kdr: 1.49, winRate: 0.51, matches: 31 }
+    { playerId: '2', name: 'HxC Noob Killer', platform: 'Xbox', kdr: 1.74, winRate: 0.55, matches: 42 }
   ].map((row, index) => ({
     ...row,
     matches: row.matches + Math.floor(activePlayers / 10_000) + index
-    matches: row.matches + Math.floor(activePlayers / 10000) + index
   }))
 }
 
@@ -99,13 +95,152 @@ function buildTrend(activePlayers: number) {
 
 function asMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error)
-  points.push({
-    timestamp,
-    activePlayers,
-    matches: Math.round(activePlayers * 1.8)
-  })
+}
 
-  return points
+function findNumber(source: unknown, keys: string[]): number | null {
+  if (typeof source !== 'object' || source === null) return null
+
+  const queue: unknown[] = [source]
+  while (queue.length > 0) {
+    const value = queue.shift()
+    if (typeof value !== 'object' || value === null) continue
+
+    for (const [k, v] of Object.entries(value)) {
+      if (typeof v === 'number' && keys.some((key) => k.toLowerCase().includes(key))) {
+        return v
+      }
+      if (typeof v === 'object' && v !== null) {
+        queue.push(v)
+      }
+    }
+  }
+
+  return null
+}
+
+async function fetchPlayersFromTemplate(): Promise<PlayerRow[]> {
+  if (!playerTemplateEndpoint || playerTags.length === 0) {
+    return []
+  }
+
+  const rows: PlayerRow[] = []
+
+  for (const [index, tag] of playerTags.entries()) {
+    const url = playerTemplateEndpoint
+      .replaceAll('{name}', encodeURIComponent(tag))
+      .replaceAll('{platform}', encodeURIComponent(playerPlatform))
+
+    const response = await fetch(url, {
+      headers: {
+        ...(apiKey ? { Authorization: `Bearer ${apiKey}`, 'TRN-Api-Key': apiKey } : {}),
+        'User-Agent': 'battlefield6-stats-dashboard/1.3'
+      },
+      signal: AbortSignal.timeout(requestTimeoutMs)
+    })
+
+    if (!response.ok) {
+      throw new Error(`Player lookup failed (${response.status}) for ${tag}`)
+    }
+
+    const payload: unknown = await response.json()
+    const kdr = findNumber(payload, ['kdr', 'kd']) ?? 0
+    const winRatePercent = findNumber(payload, ['winrate', 'win_rate', 'winspercent'])
+    const matches = findNumber(payload, ['matches', 'games', 'rounds']) ?? 0
+
+    rows.push({
+      playerId: String(index + 1),
+      name: tag,
+      platform: playerPlatform,
+      kdr,
+      winRate: Math.max(
+        0,
+        Math.min(
+          1,
+          (winRatePercent ?? 0) > 1 ? (winRatePercent ?? 0) / 100 : (winRatePercent ?? 0)
+        )
+      ),
+      matches: Math.max(0, Math.round(matches))
+    })
+  }
+
+  return rows
+}
+
+function extractNextDataJson(html: string): unknown {
+  const nextDataMatch = html.match(
+    /<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/i
+  )
+  if (!nextDataMatch?.[1]) {
+    throw new Error('Tracker profile payload not found in HTML')
+  }
+
+  return JSON.parse(nextDataMatch[1]) as unknown
+}
+
+function toTrackerPlatform(platform: string) {
+  const normalized = platform.toLowerCase()
+  if (normalized === 'xbox' || normalized === 'xbl') return 'xbl'
+  if (normalized === 'playstation' || normalized === 'psn' || normalized === 'ps5') return 'psn'
+  if (normalized === 'pc') return 'origin'
+  return normalized
+}
+
+async function fetchPlayersFromTrackerNoKey(): Promise<PlayerRow[]> {
+  if (playerTags.length === 0) return []
+
+  const trackerPlatform = toTrackerPlatform(playerPlatform)
+  const trackerGames = ['bf6', 'bf2042']
+  const rows: PlayerRow[] = []
+
+  for (const [index, tag] of playerTags.entries()) {
+    let playerRow: PlayerRow | null = null
+
+    for (const game of trackerGames) {
+      const url = `https://tracker.gg/${game}/profile/${trackerPlatform}/${encodeURIComponent(tag)}/overview`
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; battlefield6-stats-dashboard/1.3)'
+        },
+        signal: AbortSignal.timeout(requestTimeoutMs)
+      })
+
+      if (!response.ok) {
+        continue
+      }
+
+      const html = await response.text()
+      const payload = extractNextDataJson(html)
+
+      const kdr = findNumber(payload, ['kdr', 'kd'])
+      const winRatePercent = findNumber(payload, ['winrate', 'win_rate', 'winspercent'])
+      const matches = findNumber(payload, ['matches', 'games', 'rounds'])
+
+      if (kdr === null || winRatePercent === null || matches === null) {
+        continue
+      }
+
+      playerRow = {
+        playerId: String(index + 1),
+        name: tag,
+        platform: playerPlatform,
+        kdr,
+        winRate: Math.max(
+          0,
+          Math.min(1, winRatePercent > 1 ? winRatePercent / 100 : winRatePercent)
+        ),
+        matches: Math.max(1, Math.round(matches))
+      }
+      break
+    }
+
+    if (!playerRow) {
+      throw new Error(`Tracker profile lookup failed for ${tag}`)
+    }
+
+    rows.push(playerRow)
+  }
+
+  return rows
 }
 
 async function main() {
@@ -119,20 +254,20 @@ async function main() {
     fetchJson(achievementsUrl, steamAchievementSchema),
     customPlayersEndpoint
       ? fetchJson(customPlayersEndpoint, topPlayerSchema)
-      : Promise.resolve(deriveFallbackPlayers(0))
+      : playerTemplateEndpoint
+        ? fetchPlayersFromTemplate()
+        : fetchPlayersFromTrackerNoKey()
   ])
 
   const alerts: { level: 'info' | 'warn' | 'error'; message: string }[] = []
 
-  const activePlayers =
-    playersResult.status === 'fulfilled' ? playersResult.value.response.player_count : 0
+  const activePlayers = playersResult.status === 'fulfilled' ? playersResult.value.response.player_count : 0
 
   if (playersResult.status === 'rejected') {
     alerts.push({
       level: 'error',
       message: `Failed to fetch active player count: ${asMessage(playersResult.reason)}`
     })
-    alerts.push({ level: 'error', message: `Failed to fetch active player count: ${playersResult.reason}` })
   }
 
   let avgWinRate = 0.5
@@ -153,11 +288,10 @@ async function main() {
       level: 'warn',
       message: `Failed to fetch achievement metrics: ${asMessage(achievementResult.reason)}`
     })
-    alerts.push({ level: 'warn', message: `Failed to fetch achievement metrics: ${achievementResult.reason}` })
   }
 
-  const topPlayers =
-    topPlayersResult.status === 'fulfilled'
+  let topPlayers =
+    topPlayersResult.status === 'fulfilled' && topPlayersResult.value.length > 0
       ? topPlayersResult.value.map((row) => ({
           ...row,
           matches: Math.max(1, row.matches)
@@ -167,16 +301,19 @@ async function main() {
   if (topPlayersResult.status === 'rejected') {
     alerts.push({
       level: 'warn',
-      message: `Top players endpoint unavailable; using fallback sample data: ${asMessage(topPlayersResult.reason)}`
-      message: `Top players endpoint unavailable; using fallback sample data: ${topPlayersResult.reason}`
+      message: `Top players API unavailable; showing fallback rows: ${asMessage(topPlayersResult.reason)}`
     })
+  }
+
+  if (topPlayers.length > 2) {
+    topPlayers = topPlayers.slice(0, 2)
   }
 
   const trend = buildTrend(activePlayers)
 
   const output = {
     meta: {
-      source: 'steam-web-api',
+      source: 'battlefield-api+steam-web-api',
       generatedAt: timestamp,
       status: alerts.some((item) => item.level === 'error')
         ? 'error'

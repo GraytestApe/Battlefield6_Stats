@@ -8,8 +8,4 @@ const baseFromEnv = process.env.VITE_BASE_PATH
 export default defineConfig({
   plugins: [react()],
   base: baseFromEnv ?? (isCi && repoName ? `/${repoName}/` : '/')
-
-export default defineConfig({
-  plugins: [react()],
-  base: isCi && repoName ? `/${repoName}/` : '/'
 })
