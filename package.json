@@ -9,11 +9,12 @@
   "scripts": {
     "dev": "vite",
     "data:fetch": "tsx scripts/fetch-data.ts",
+    "data:validate": "tsx scripts/validate-data.ts",
     "build": "npm run data:fetch && npm run build:app",
-    "build:app": "tsc -b && vite build",
+    "build:app": "npm run data:validate && tsc -b && vite build",
     "typecheck": "tsc -b",
     "lint": "eslint .",
-    "check": "npm run lint && npm run typecheck",
+    "check": "npm run lint && npm run typecheck && npm run data:validate",
     "preview": "vite preview"
   },
   "dependencies": {

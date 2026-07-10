@@ -1,5 +1,5 @@
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { dashboardData } from './data'
+import { dashboardData, dashboardDataParseError } from './data'
 import { SectionCard } from './components/SectionCard'
 import { SummaryCard } from './components/SummaryCard'
 
@@ -39,6 +39,12 @@ export default function App() {
           <span className={`status status-${dashboardData.meta.status}`}>Pipeline status: {dashboardData.meta.status}</span>
         </div>
       </header>
+
+      {dashboardDataParseError ? (
+        <section className="card" role="alert" aria-live="assertive">
+          <strong>Data validation warning:</strong> {dashboardDataParseError}
+        </section>
+      ) : null}
 
       <section className="summary-grid">
         <SummaryCard label="Active Players" value={numberFormatter.format(dashboardData.summary.activePlayers)} />

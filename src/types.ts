@@ -1,42 +1,18 @@
-export type AlertLevel = 'info' | 'warn' | 'error'
+import { z } from 'zod'
+import {
+  alertLevelSchema,
+  dashboardAlertSchema,
+  dashboardDataSchema,
+  dashboardMetaSchema,
+  dashboardSummarySchema,
+  playerRowSchema,
+  trendPointSchema
+} from './schema'
 
-export interface DashboardAlert {
-  level: AlertLevel
-  message: string
-}
-
-export interface DashboardMeta {
-  source: string
-  generatedAt: string
-  status: 'ok' | 'degraded' | 'error'
-}
-
-export interface DashboardSummary {
-  activePlayers: number
-  matches24h: number
-  avgKdr: number
-  avgWinRate: number
-}
-
-export interface TrendPoint {
-  timestamp: string
-  activePlayers: number
-  matches: number
-}
-
-export interface PlayerRow {
-  playerId: string
-  name: string
-  platform: string
-  kdr: number
-  winRate: number
-  matches: number
-}
-
-export interface DashboardData {
-  meta: DashboardMeta
-  summary: DashboardSummary
-  trend: TrendPoint[]
-  topPlayers: PlayerRow[]
-  alerts: DashboardAlert[]
-}
+export type AlertLevel = z.infer<typeof alertLevelSchema>
+export type DashboardAlert = z.infer<typeof dashboardAlertSchema>
+export type DashboardMeta = z.infer<typeof dashboardMetaSchema>
+export type DashboardSummary = z.infer<typeof dashboardSummarySchema>
+export type TrendPoint = z.infer<typeof trendPointSchema>
+export type PlayerRow = z.infer<typeof playerRowSchema>
+export type DashboardData = z.infer<typeof dashboardDataSchema>
